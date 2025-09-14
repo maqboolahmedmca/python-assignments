@@ -1,0 +1,9 @@
+
+# Problem Statement:
+
+You see 5 folders, each with a lot of random .txt files.
+Within one of these text files is a telephone number formated ###-###-#### 
+Use the Python os module and regular expressions to iterate through each file, open it, and search for a telephone number.
+
+# How to run?
+python3 regex-contactnum-extractor.py 
