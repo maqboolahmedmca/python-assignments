@@ -16,4 +16,4 @@ It uses `/content/` folder to recursively walk through the folder & subfolder to
     * run 'python3 rearrange_pdf_files.py' to arrange the pdfs in subfolders
 
 2. Extract pdf text from all recursively
-    * ./run.sh
+    * ./run.sh (runs Step 1 as well)

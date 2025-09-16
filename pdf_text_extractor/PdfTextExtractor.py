@@ -54,5 +54,6 @@ class PdfExtractor:
 
         with open(self.output_file, mode, encoding='utf-8') as file:
             file.write(text)
-            print(f"Extracted text written to {self.output_file}")
-            print("*" * 100)
+            if (mode == 'w'):
+                print(f"Extracted text written to {self.output_file}")
+                print("*" * 100)

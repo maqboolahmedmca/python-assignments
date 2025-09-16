@@ -21,6 +21,8 @@ def recursive_extract_all_pdf_text():
                     extractor.load_pdf()
                     text = extractor.extract_text_from_all_pages()
                     extractor.write_text_to_output_file(text, 'a')
+                    print(f"Extracted text written to {output_dir}/output.txt")
+                    print("*" * 100)
     except FileNotFoundError as e:
         print(e)
 
