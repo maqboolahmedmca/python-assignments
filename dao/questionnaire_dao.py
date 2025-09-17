@@ -3,6 +3,7 @@ from dao.config_loader import ConfigLoader
 from model.question import Question
 from model.subject import Subject
 from model.chapter import Chapter   
+from typing import List
 
 class QuestionnaireDao:
     def __init__(self):
@@ -10,6 +11,10 @@ class QuestionnaireDao:
         self.db_pool = init_db_pool(db_config=self.db_config)
     
     def store_subject(self, subject: Subject):
+        """
+        Stores a Subject in the database.
+        If the subject already exists (by name), updates it.
+        """
         conn = None
         cursor = None
         try:
@@ -39,7 +44,7 @@ class QuestionnaireDao:
             if conn:
                 conn.rollback()
             print(f"Error storing subject: {e}")
-            return None
+            raise e
 
         finally:
             if cursor:
@@ -50,7 +55,7 @@ class QuestionnaireDao:
     def store_chapter(self, chapter: Chapter):
         """
         Stores a Chapter in the database, linked to a subject.
-        If the chapter already exists (id and subject_id), updates it.
+        If the chapter already exists (name and subject_id), updates it.
         """
         conn = None
         cursor = None
@@ -87,7 +92,7 @@ class QuestionnaireDao:
             if conn:
                 conn.rollback()
             print(f"Error storing chapter: {e}")
-            return None
+            raise e
 
         finally:
             if cursor:
@@ -98,7 +103,7 @@ class QuestionnaireDao:
     def store_question(self, question: Question):
         """
         Stores a Question in the database, linked to a chapter.
-        If the question already exists (by number and chapter_id), updates it.
+        If the question already exists (by text and chapter_id), updates it.
         """
         conn = None
         cursor = None
@@ -106,7 +111,6 @@ class QuestionnaireDao:
             conn = get_connection()
             cursor = conn.cursor()
 
-            # print(question.to_dict())
             # Check if question exists for this chapter
             cursor.execute(
                 "SELECT id FROM question WHERE question_text = %s AND chapter_id = %s",
@@ -162,8 +166,54 @@ class QuestionnaireDao:
             if conn:
                 conn.rollback()
             print(f"Error storing question: {e}")
-            return None
+            raise e
 
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                release_connection(conn)
+
+    
+    def list_chapters(self) -> List["Chapter"]:
+        """
+        List Chapters from the database
+        """
+        conn = None
+        cursor = None
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, subject_id, name  FROM chapter"
+            )
+            return [Chapter(id=row[0], subject_id=row[1], name=row[2]) for row in cursor.fetchall()]
+        except Exception as e:
+            print(f"Error listing chapter: {e}")
+            raise e
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                release_connection(conn)
+    
+    def get_questions_by_chapter(self, chapter_id: int) -> List["Question"]:
+        """
+        Get Questions by chapter_id from the database
+        """
+        conn = None
+        cursor = None
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, chapter_id, question_text, option_a, option_b, option_c, option_d, answer_option FROM question WHERE chapter_id = %s",
+                (chapter_id,)
+            )
+            return [Question(id=row[0], chapter_id=row[1], text=row[2], option_a=row[3], option_b=row[4], option_c=row[5], option_d=row[6], answer=row[7]) for row in cursor.fetchall()]
+        except Exception as e:
+            print(f"Error getting questions by chapter: {e}")
+            raise e
         finally:
             if cursor:
                 cursor.close()
