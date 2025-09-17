@@ -1,4 +1,4 @@
-from pdf_text_extractor.PdfTextExtractor import PdfExtractor
+from services.PdfTextExtractor import PdfExtractor
 
 try:
     extractor = PdfExtractor()

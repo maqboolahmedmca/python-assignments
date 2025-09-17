@@ -1,7 +1,7 @@
 export PYTHONPATH=$(pwd)/..
 
 rm -rf content
-unzip content.zip
+unzip -q content.zip
 
 python3 rearrange_pdf_files.py
 echo 'Finished rearranging PDF files.'

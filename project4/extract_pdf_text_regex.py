@@ -1,7 +1,7 @@
 import os
 import json 
 import re
-from pdf_text_extractor.PdfTextExtractor import PdfExtractor
+from services.PdfTextExtractor import PdfExtractor
 
 # Load config.json
 config_path = "config.json"

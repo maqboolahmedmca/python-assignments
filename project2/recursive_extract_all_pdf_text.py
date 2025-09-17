@@ -1,5 +1,5 @@
 import os
-from pdf_text_extractor.PdfTextExtractor import PdfExtractor
+from services.PdfTextExtractor import PdfExtractor
 
 content_dir='content'
 output_dir='output'
