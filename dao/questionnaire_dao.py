@@ -5,6 +5,8 @@ from model.subject import Subject
 from model.chapter import Chapter   
 from model.base_question import BaseQuestion
 from model.objective_question import ObjectiveQuestion
+from model.single_option_question import SingleOptionQuestion
+from model.multiple_options_question import MultipleOptionsQuestion
 from typing import List
 from psycopg2.extras import Json
 
@@ -304,6 +306,35 @@ class QuestionnaireDao:
             if conn:
                 release_connection(conn)
     
+    def list_type_questions(self):
+        """
+        List type questions.
+        """
+        conn = None
+        cursor = None
+        type_questions = []
+        try:
+            conn = get_connection()
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT id, type, text, marks FROM base_question"
+            )
+            rows = cur.fetchall()
+            for row in rows:
+                type_question = self.map_row_to_type_question(row, cur)
+                type_questions.append(type_question)
+
+            return type_questions
+        except Exception as e:
+            print(f"Error list type questions: {e}")
+            raise e
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                release_connection(conn)
+
     def map_row_to_type_question(self, row, cur):
         qid, qtype, text, marks = row
         if qtype in ('single', 'multiple'):
@@ -315,7 +346,13 @@ class QuestionnaireDao:
             if not obj_row:
                 return None
             options, correct_answer = obj_row
-            return ObjectiveQuestion(id=qid, type=qtype, text=text, options=options, correct_answer=correct_answer, marks=marks)
+
+            if (qtype == 'single'):
+                return SingleOptionQuestion(id=qid, text=text, options=options, correct_answer=correct_answer, marks=marks)
+            elif (qtype == 'multiple'):
+                return MultipleOptionsQuestion(id=qid, text=text, options=options, correct_answer=correct_answer, marks=marks)
+            else:
+                return None
         elif qtype == 'descriptive':
             cur.execute(
                 "SELECT keywords FROM descriptive_questions WHERE id = %s",

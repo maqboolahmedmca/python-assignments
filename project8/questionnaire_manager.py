@@ -102,6 +102,15 @@ class QuestionaireManager:
                 break
 
         print(f"\nYour total score: {total_score}/{len(type_questions)}")
+    
+    def list_type_questions(self):
+        type_questions = manager.dao.list_type_questions()
+        print(f"Total Questions found in DB: {len(type_questions)}")
+        for tq in type_questions:
+            print(f"Class: {type(tq)} Q{tq.id}: {tq.text}")
+            print(f"  Options: {tq.options}")
+            print(f"  Correct Answer: {tq.correct_answer}")
+            print(f"  Marks: {tq.marks}")
 
 manager = QuestionaireManager()
 txt = manager.extract_file_text()
@@ -130,6 +139,9 @@ for chapter in subject.chapters:
 
 # Store all the type_questions in to DB:
 manager.store_questions_to_db(type_questions)
+
+# List all the type_questions from DB:
+manager.list_type_questions()
 
 # Trial Test
 # manager.trial_test()
