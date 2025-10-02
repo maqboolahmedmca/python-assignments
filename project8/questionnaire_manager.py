@@ -57,19 +57,23 @@ class QuestionaireManager:
                 return False
                 
     def store_questions_to_db(self, type_questions: list[ObjectiveQuestion]):
+        total_stored = 0
+        total_questions = len(type_questions)
+        existing_questions = 0
         for tq in type_questions:
             question_text = tq.text
             existing_question = self.dao.get_type_question_by_text(question_text)
 
             if (existing_question):
                 print(f"Question already exists in DB: {question_text}")
+                existing_questions += 1
                 continue    
             
-            print(f"Storing question: {question_text}")
             self.dao.insert_type_question(tq)
-            # choice = input("Press Enter to continue or type 'q' to quit: ")
-            # if choice.strip().lower() == "q":
-            #     break
+            total_stored += 1
+        print(f"Total Questions Processed: {total_questions}")
+        print(f"Total New Questions Stored: {total_stored}")
+        print(f"Total Existing Questions Skipped: {existing_questions}")
     
     def trial_test(self):
         total_score = 0

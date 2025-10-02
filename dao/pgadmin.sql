@@ -58,7 +58,12 @@ CREATE TABLE descriptive_questions (
 );
 
 
+select b.* from base_question b
+select o.* from objective_question o
+
 select b.*, o.options, o.correct_answer from base_question b
 	left join objective_question o on b.id = o.id
 
 delete from base_question b where b.id = 5
+
+TRUNCATE objective_question, descriptive_questions, base_question RESTART IDENTITY CASCADE;
