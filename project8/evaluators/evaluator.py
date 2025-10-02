@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
-from project8.questions.question import Question
+from model.base_question import BaseQuestion
 
 class Evaluator(ABC):
     """Abstract class for Questions"""
@@ -9,7 +10,5 @@ class Evaluator(ABC):
         super().__init__()
 
     @abstractmethod
-    def check_answer(self, question: Question, answer: str) -> int:
-        """ Evaluate & return the score in percentage """
-        print(question)
-        print(answer)
+    def evaluate_answer(self, question: BaseQuestion, answer: Any) -> int:
+        pass

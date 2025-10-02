@@ -3,7 +3,10 @@ from dao.config_loader import ConfigLoader
 from model.question import Question
 from model.subject import Subject
 from model.chapter import Chapter   
+from model.base_question import BaseQuestion
+from model.objective_question import ObjectiveQuestion
 from typing import List
+from psycopg2.extras import Json
 
 class QuestionnaireDao:
     def __init__(self):
@@ -219,5 +222,113 @@ class QuestionnaireDao:
                 cursor.close()
             if conn:
                 release_connection(conn)
+    
+    def insert_type_question(self, question: BaseQuestion) -> int:
+        """
+        Insert question into base_question and subclass tables.
+        Returns the generated question id.
+        """
+        conn = None
+        cursor = None
+        try:
+            conn = get_connection()
+            cur = conn.cursor()
+            # 1. Insert into base_question
+            cur.execute(
+                """
+                INSERT INTO base_question (type, text, marks)
+                VALUES (%s, %s, %s)
+                RETURNING id
+                """,
+                (question.type, question.text, question.marks),
+            )
+            qid = cur.fetchone()[0]
+
+            # 2. Insert into subclass table
+            if isinstance(question, ObjectiveQuestion):
+                # objective question (single or multiple)
+                cur.execute(
+                    """
+                    INSERT INTO objective_question (id, options, correct_answer)
+                    VALUES (%s, %s, %s)
+                    """,
+                    (qid, Json(question.options), Json(question.correct_answer)),
+                )
+            else:  # descriptive
+                cur.execute(
+                    """
+                    INSERT INTO descriptive_questions (id, keywords)
+                    VALUES (%s, %s)
+                    """,
+                    (qid, Json(question.correct_answer)),
+                )
+
+            conn.commit()
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            print(f"Error storing type question: {e}")
+            raise e
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                release_connection(conn)
+        return qid
+    
+    def get_type_question_by_text(self, question_text):
+        """
+        Gets question by it's text.
+        """
+        conn = None
+        cursor = None
+        try:
+            conn = get_connection()
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT id, type, text, marks FROM base_question WHERE text = %s",
+                (question_text,)
+            )
+            row = cur.fetchone()
+            if not row:
+                return None
+            return self.map_row_to_type_question(row, cur)
+        except Exception as e:
+            print(f"Error getting type question: {e}")
+            raise e
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                release_connection(conn)
+    
+    def map_row_to_type_question(self, row, cur):
+        qid, qtype, text, marks = row
+        if qtype in ('single', 'multiple'):
+            cur.execute(
+                "SELECT options, correct_answer FROM objective_question WHERE id = %s",
+                (qid,)
+            )
+            obj_row = cur.fetchone()
+            if not obj_row:
+                return None
+            options, correct_answer = obj_row
+            return ObjectiveQuestion(id=qid, type=qtype, text=text, options=options, correct_answer=correct_answer, marks=marks)
+        elif qtype == 'descriptive':
+            cur.execute(
+                "SELECT keywords FROM descriptive_questions WHERE id = %s",
+                (qid,)
+            )
+            desc_row = cur.fetchone()
+            if not desc_row:
+                return None
+            keywords = desc_row[0]
+            return BaseQuestion(id=qid, text=text, marks=marks, correct_answer=keywords)
+        else:
+            print(f"Unknown question type: {qtype}")
+            return None
+
 
 

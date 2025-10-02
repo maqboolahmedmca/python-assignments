@@ -37,9 +37,21 @@ class QuestionaireManager:
                     self.dao.store_question(question)
         
 manager = QuestionaireManager()
-text = manager.extract_pdf_text()
+# text = manager.extract_pdf_text()
+with open("../content/chemistry_questions.txt", "r", encoding="utf-8") as f:
+    text = f.read()
 subject = manager.parse_question_paper(text)
-manager.store_questions_to_db(subject)
+# manager.store_questions_to_db(subject)
+
+for chapter in subject.chapters:
+    print(f"  Chapter {chapter.id}: {chapter.name}")
+    for question in chapter.questions:
+        print(f"    Q{question.id}: {question.text}")
+        print(f"      A) {question.option_a}")
+        print(f"      B) {question.option_b}")
+        print(f"      C) {question.option_c}")
+        print(f"      D) {question.option_d}")
+        print(f"      Answer: {question.answer}")
 
 
 
