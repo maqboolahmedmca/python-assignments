@@ -28,4 +28,4 @@ It uses `/content/Chemistry Questions.pdf`, extracts the questionnaire & stores 
 Note: Provide the database details in the dao/config.json
 
 # How to Run?
-python3 questionnaire_manager.py
+./run.sh

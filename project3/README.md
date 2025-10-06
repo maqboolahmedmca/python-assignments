@@ -20,4 +20,4 @@ pip install pypdf
 It uses `/content/Chemistry Questions.pdf`, extracts the text  & stores it in to `./output.txt`.
 
 # How to Run?
-python3 extract_pdf_page_text.py
+./run.sh

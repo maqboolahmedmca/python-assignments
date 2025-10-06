@@ -23,4 +23,4 @@ It uses local database to load the entities (Subject, Chapter, Question)
 Note: Provide the database details in the dao/config.json
 
 # How to Run?
-python3 practice_test_conductor.py
+./run.sh

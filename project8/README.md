@@ -27,7 +27,7 @@ Update project 5 to support different types of questions. Questions can be 1) Su
 * As per project 5
 
 # How to Run?
-python3 questionnaire_manager.py
+./run.sh
 
 # Design
 
