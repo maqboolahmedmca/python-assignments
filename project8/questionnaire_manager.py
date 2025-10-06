@@ -75,7 +75,7 @@ class QuestionaireManager:
         print(f"Total New Questions Stored: {total_stored}")
         print(f"Total Existing Questions Skipped: {existing_questions}")
     
-    def trial_test(self):
+    def trial_test(self, type_questions: list[BaseQuestion]=None):
         total_score = 0
         for tq in type_questions:
 
@@ -107,10 +107,11 @@ class QuestionaireManager:
         type_questions = manager.dao.list_type_questions()
         print(f"Total Questions found in DB: {len(type_questions)}")
         for tq in type_questions:
-            print(f"Class: {type(tq)} Q{tq.id}: {tq.text}")
+            print(f"Class: {type(tq).__name__} Q{tq.id}: {tq.text}")
             print(f"  Options: {tq.options}")
             print(f"  Correct Answer: {tq.correct_answer}")
             print(f"  Marks: {tq.marks}")
+        return type_questions
 
 manager = QuestionaireManager()
 txt = manager.extract_file_text()
@@ -141,7 +142,7 @@ for chapter in subject.chapters:
 manager.store_questions_to_db(type_questions)
 
 # List all the type_questions from DB:
-manager.list_type_questions()
+type_questions = manager.list_type_questions()
 
 # Trial Test
-# manager.trial_test()
+manager.trial_test(type_questions=type_questions)

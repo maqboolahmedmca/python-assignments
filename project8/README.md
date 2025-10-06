@@ -99,3 +99,44 @@ Evaluator
 \* `TrueFalseEvaluator` could just delegate to `SingleOptionEvaluator`, but is kept separate for clarity/extension.
 ```
 
+## Database Tables
+
+-- project8: table-per-subclass approach
+
+-- Base table (all questions)
+
+CREATE TABLE base_question (
+    id SERIAL PRIMARY KEY,
+
+    type VARCHAR(50) NOT NULL,   -- "single", "multi", "match", "truefalse", "descriptive"
+
+    text TEXT NOT NULL,
+
+    marks INT NOT NULL
+);
+
+
+-- Objective questions (Single | Multi | Match | TrueFalse)
+CREATE TABLE objective_question (
+    id INT PRIMARY KEY REFERENCES base_question(id) ON DELETE CASCADE,
+
+    options JSONB NOT NULL,
+
+    correct_answer JSONB NOT NULL
+);
+
+
+-- Descriptive questions
+
+CREATE TABLE descriptive_questions (
+
+    id INT PRIMARY KEY REFERENCES base_question(id) ON DELETE CASCADE,
+
+    keywords JSONB
+);
+
+## Database Data
+
+Data Joining `base_question` & `objective_question` - Contains single & multiple options answer
+
+![Database Data](questions_data.png "Data")
