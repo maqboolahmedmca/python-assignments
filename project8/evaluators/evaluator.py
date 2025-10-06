@@ -4,7 +4,7 @@ from typing import Any
 from model.base_question import BaseQuestion
 
 class Evaluator(ABC):
-    """Abstract class for Questions"""
+    """Abstract class for Evaluation"""
 
     def __init__(self) -> None:
         super().__init__()

@@ -41,28 +41,3 @@ class MultipleOptionsEvaluator(Evaluator):
         else:
             raise ValueError(f"Unknown mode: {self.mode}")
         
-    # def evaluate_answer(self, question: BaseQuestion, answers: List[Any]) -> int:
-    #     if not hasattr(question, "correct_answer"):
-    #         raise ValueError("Question does not have correct_answer field")
-
-    #     correct_answers = set(question.correct_answer)   # expected
-    #     given_answers = set(answers)                    # student input
-
-    #     if not correct_answers:
-    #         return 0
-
-    #     # Correct choices matched
-    #     correct_matches = len(correct_answers & given_answers)
-
-    #     # Wrong choices penalize
-    #     wrong_matches = len(given_answers - correct_answers)
-
-    #     print("correct_matches: " + str(correct_matches) + " wrong_matches: " + str(wrong_matches))
-    #     # Score calculation (simple version: correctness ratio)
-    #     total_correct = len(correct_answers)
-    #     score_pct = max(0, (correct_matches - wrong_matches) / total_correct * 100)
-
-    #     flag = score_pct == 100
-    #     return flag, score_pct
-
-    
